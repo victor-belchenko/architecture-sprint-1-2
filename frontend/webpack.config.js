@@ -1,6 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { ModuleFederationPlugin } = require('webpack').container;
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
   entry: './src/index.js',
@@ -8,23 +9,22 @@ module.exports = {
   devServer: {
     port: 3000,
     static: {
-      directory: path.join(__dirname, 'public'), // Добавлено для статических файлов
+      directory: path.join(__dirname, 'public'),
       publicPath: '/',
     },
     historyApiFallback: true,
-    hot: true, // Включен HMR
-    open: true, // Автоматическое открытие браузера
+    hot: true,
+    open: true,
     client: {
-        overlay: {
-          errors: true,
-          warnings: false,
-        },
-    }
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+    },
   },
-
   output: {
     publicPath: 'http://localhost:3000/',
-    uniqueName: 'hostApp', // Важно для избежания конфликтов
+    uniqueName: 'hostApp',
   },
   module: {
     rules: [
@@ -35,7 +35,7 @@ module.exports = {
         options: {
           presets: [
             '@babel/preset-env',
-            ['@babel/preset-react', { runtime: 'automatic' }] // Новый JSX-трансформ
+            ['@babel/preset-react', { runtime: 'automatic' }],
           ],
         },
       },
@@ -43,8 +43,8 @@ module.exports = {
         test: /\.(woff2|woff|ttf|eot)$/i,
         type: 'asset/resource',
         generator: {
-          filename: 'fonts/[name][ext]' // Сохранять в папку fonts
-        }
+          filename: 'fonts/[name][ext]',
+        },
       },
       {
         test: /\.css$/,
@@ -52,7 +52,7 @@ module.exports = {
       },
       {
         test: /\.svg$/i,
-        use: ['@svgr/webpack'], // Обработка SVG
+        use: ['@svgr/webpack'],
       },
     ],
   },
@@ -64,41 +64,46 @@ module.exports = {
       },
       shared: {
         react: {
-            singleton: true,
-            //requiredVersion: '19.1.0',
-            eager: false,
-            import: 'react' // Явное указание
-          },
-          'react-dom/client': { // Добавьте клиент
-            singleton: true,
-            //requiredVersion: '19.1.0',
-            eager: false,
-            import: 'react-dom/client'
-          },
-          'react-router-dom': {
-            singleton: true,
-           // requiredVersion: '^7.4.1'
-          }
+          singleton: true,
+          eager: true,
+          import: 'react',
+          requiredVersion: '^17.0.2', // Соответствует вашей версии
+        },
+        'react-dom': { // Используйте react-dom, а не react-dom/client
+          singleton: true,
+          eager: true,
+          import: 'react-dom',
+          requiredVersion: '^17.0.2',
+        },
+        //'react-router-dom': {
+        //  singleton: true,
+        //  requiredVersion: '^5.2.0', // Соответствует вашей версии
+        //},
       },
     }),
     new HtmlWebpackPlugin({
       template: './public/index.html',
       filename: 'index.html',
-      minify: false, // отключите минификацию для дебага
-      publicPath: '/', // явно укажите publicPath
+      minify: false,
+      publicPath: '/',
       scriptLoading: 'module',
       inject: 'body',
-      minify: false,
-      cache: false
+      cache: false,
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
     }),
   ],
   resolve: {
-    extensions: ['.js', '.jsx'] // Разрешение расширений файлов
+    extensions: ['.js', '.jsx'],
+    fallback: {
+      process: require.resolve('process/browser'),
+    },
   },
   experiments: {
-    topLevelAwait: true,  // Для корректной работы динамических импортов
+    topLevelAwait: true,
   },
   optimization: {
-    runtimeChunk: 'single'  // Выделяем runtime в отдельный файл
-  }
+    runtimeChunk: 'single',
+  },
 };

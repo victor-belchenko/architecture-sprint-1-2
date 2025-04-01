@@ -6,6 +6,7 @@ function ImagePopup({ card, onClose }) {
   const [selectedCard, setSelectedCard] = useState(null); // Предполагается
 
   useEffect(() => {
+    console.log('useEffect срабатывает, пытаюсь загрузить remoteModal/Modal_place');
     import('remoteModal/Modal_place')
       .then((module) => {
         setRemoteModal(() => module.default);
