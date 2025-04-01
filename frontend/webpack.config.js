@@ -52,7 +52,10 @@ module.exports = {
       },
       {
         test: /\.svg$/i,
-        use: ['@svgr/webpack'],
+        type: 'asset/resource', // Обработка SVG как файла
+        generator: {
+          filename: 'images/[name][ext]', // Сохранять в папку images
+        },
       },
     ],
   },
