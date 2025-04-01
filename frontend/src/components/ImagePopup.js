@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 function ImagePopup({ card, onClose }) {
   const [RemoteModal, setRemoteModal] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [loading, setLoading] = useState(true); // Добавляем состояние загрузки
-  const [error, setError] = useState(null); // Добавляем состояние ошибки
+  const [loading, setLoading] = useState(true); // Состояние загрузки модуля
+  const [error, setError] = useState(null); // Состояние ошибки загрузки
 
   useEffect(() => {
     console.log('useEffect срабатывает, пытаюсь загрузить remoteModal/Modal_place');
@@ -23,25 +21,17 @@ function ImagePopup({ card, onClose }) {
       });
   }, []);
 
-  // Обновляем состояние модального окна и выбранной карточки на основе пропса card
-  useEffect(() => {
-    if (card) {
-      setIsModalOpen(true);
-      setSelectedCard(card); // Используем card как selectedCard
-    } else {
-      setIsModalOpen(false);
-      setSelectedCard(null);
-    }
-  }, [card]);
-
+  // Если модуль загружается, показываем индикатор
   if (loading) {
     return <div>Загрузка модального окна...</div>;
   }
 
+  // Если произошла ошибка, показываем её
   if (error) {
     return <div>Ошибка загрузки: {error.message}</div>;
   }
 
+  // Если модуль не загружен, уведомляем об этом
   if (!RemoteModal) {
     return <div>Модуль RemoteModal не загружен</div>;
   }
@@ -57,19 +47,19 @@ function ImagePopup({ card, onClose }) {
         />
         <p className="popup__caption">{card ? card.name : ''}</p>
         <RemoteModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            onClose(); // Закрываем popup при закрытии модального окна
-          }}
+          isOpen={!!card} // Открываем модальное окно, если card передан
+          onClose={onClose} // Передаём функцию закрытия из пропсов
         >
           <div className="modal-content">
             <h3>Данные карточки</h3>
-            {selectedCard && (
+            {card ? (
               <div>
-                <p>ID: {selectedCard.id || 'Нет ID'}</p>
-                <p>Название: {selectedCard.name || selectedCard.title || 'Нет названия'}</p>
+                <p>ID владельца: {card.owner._id  || 'Нет ID'}</p>
+                <p>Название: {card.name || 'Нет названия'}</p>
+                <p>Ссылка: {card.link || 'Нет ссылки'}</p>
               </div>
+            ) : (
+              <p>Карточка не выбрана</p>
             )}
           </div>
         </RemoteModal>
