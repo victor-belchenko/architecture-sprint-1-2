@@ -10,7 +10,7 @@ module.exports = {
     port: 3000,
     static: {
       directory: path.join(__dirname, 'public'),
-      publicPath: '/',
+      publicPath: 'http://localhost:3000/',
     },
     historyApiFallback: true,
     hot: true,
@@ -62,8 +62,12 @@ module.exports = {
   plugins: [
     new ModuleFederationPlugin({
       name: 'hostApp',
+      filename: 'hostEntry.js', // Добавьте точку входа для хоста
       remotes: {
         remoteModal: 'remoteModal@http://localhost:3002/remoteEntry.js',
+      },
+      exposes: {
+        './PopupWithForm': './src/components/PopupWithForm', // Экспорт модуля
       },
       shared: {
         react: {
@@ -88,8 +92,8 @@ module.exports = {
       template: './public/index.html',
       filename: 'index.html',
       minify: false,
-      publicPath: '/',
-      scriptLoading: 'module',
+      publicPath: 'http://localhost:3000/',
+      scriptLoading: 'defer',
       inject: 'body',
       cache: false,
     }),

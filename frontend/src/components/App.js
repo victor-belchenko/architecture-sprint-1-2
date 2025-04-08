@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { Route, useHistory, Switch } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
@@ -9,7 +9,7 @@ import api from "../utils/api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
-import AddPlacePopup from "./AddPlacePopup";
+const AddPlacePopup = lazy(() => import("remoteModal/AddPlacePopup"));
 import Register from "./Register";
 import Login from "./Login";
 import InfoTooltip from "./InfoTooltip";
@@ -198,11 +198,13 @@ function App() {
           onUpdateUser={handleUpdateUser}
           onClose={closeAllPopups}
         />
-        <AddPlacePopup
-          isOpen={isAddPlacePopupOpen}
-          onAddPlace={handleAddPlaceSubmit}
-          onClose={closeAllPopups}
-        />
+        <Suspense fallback={<div>Loading AddPlacePopup...</div>}>
+          <AddPlacePopup
+            isOpen={isAddPlacePopupOpen}
+            onAddPlace={handleAddPlaceSubmit}
+            onClose={closeAllPopups}
+          />
+        </Suspense>
         <PopupWithForm title="Вы уверены?" name="remove-card" buttonText="Да" />
         <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}

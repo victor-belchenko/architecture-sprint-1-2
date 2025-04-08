@@ -15,7 +15,7 @@ module.exports = {
     open: true,
     devMiddleware: {
       publicPath: '/',
-      writeToDisk: true
+      writeToDisk: false
     }
   },
   output: {
@@ -47,6 +47,10 @@ module.exports = {
       filename: 'remoteEntry.js', // Имя файла для Module Federation
       exposes: {
         './Modal_place': './src/Modal_place', // Пример экспорта компонента
+        './AddPlacePopup': './src/AddPlacePopup.js'
+      },
+      remotes: {
+        hostApp: 'hostApp@http://localhost:3000/hostEntry.js', // Подключение хоста
       },
       shared: {
         react: { 
